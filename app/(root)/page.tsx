@@ -1,41 +1,57 @@
-import HeaderBox from '@/components/HeaderBox'
+"use client";
+
+import React, { useEffect, useState } from 'react';
+import HeaderBox from '@/components/HeaderBox';
 import RightSidebar from '@/components/RightSidebar';
 import TotalBalanceBox from '@/components/TotalBalanceBox';
-import React from 'react'
+import { getLoggedInUser } from '@/lib/actions/user.actions';
 
 const Home = () => {
-    const loggedIn = { firstName : 'Sean', lastName : 'Hoenderdos', email: 'hi@seanhoenderdos.xyz' };
+  const [loggedIn, setLoggedIn] = useState<User | null>(null);
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const user = await getLoggedInUser();
+        setLoggedIn(user);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        setLoggedIn(null);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   return (
     <section className='home'>
-        <div className='home-content'>
-            <header className='home-header'>
-                <HeaderBox 
-                    type="greeting"
-                    title="Welcome"
-                    user={loggedIn?.firstName || 'Guest'}
-                    subtext="Access and manage your account and transactions effeciently."
-                />
+      <div className='home-content'>
+        <header className='home-header'>
+          <HeaderBox 
+            type="greeting"
+            title="Welcome"
+            user={loggedIn?.name || 'Guest'}
+            subtext="Access and manage your account and transactions efficiently."
+          />
 
-                <TotalBalanceBox 
-                accounts={[]}
-                totalBanks={1}
-                totalCurrentBalance={1250}
-                />
-            </header>
+          <TotalBalanceBox 
+            accounts={[]}
+            totalBanks={1}
+            totalCurrentBalance={1350}
+          />
+        </header>
 
-            RECENT TRANSACTIONS
-        </div>
+        RECENT TRANSACTIONS
+      </div>
 
-        <RightSidebar 
-        user={loggedIn}
+      <RightSidebar 
+        user={loggedIn || { firstName: 'Sean', lastName: 'Hoenderdos', email: 'hi@seanhoenderdos.xyz' }}
         transactions={[]}
         banks={[{ currentBalance: 123.50 }, 
-            { currentBalance: 123.50 }]}
-        />
+          { currentBalance: 123.50 }]}
+      />
     </section>
-  )
+  );
 }
 
-export default Home
+export default Home;
