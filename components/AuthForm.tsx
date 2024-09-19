@@ -25,6 +25,7 @@ import SignUp from '@/app/(auth)/sign-up/page'
 import { sign } from 'crypto'
 import { useRouter } from 'next/navigation'
 import { getLoggedInUser, signIn, signUp } from '@/lib/actions/user.actions'
+import PlaidLink from './PlaidLink'
 
 
 const AuthForm = ({ type }: { type: string }) => {
@@ -49,9 +50,22 @@ const AuthForm = ({ type }: { type: string }) => {
 
     try {
         //sign up with Appwrite & create plaid link token
-
+        
         if(type === 'sign-up') {
-            const newUser = await signUp(data);
+            const userData = {
+                firstName: data.firstName!,
+                lastName: data.lastName!,
+                address1: data.address1!,
+                city: data.city!,
+                state: data.state!,
+                postalCode: data.postalCode!,
+                dateOfBirth: data.dateOfBirth!,
+                ssn: data.ssn!,
+                email: data.email,
+                password: data.password,
+            }
+
+            const newUser = await signUp(userData);
             setUser(newUser);
             }
 
@@ -100,7 +114,7 @@ const AuthForm = ({ type }: { type: string }) => {
         </header>
         {user ? (
             <div  className='flex flex-col gap-4'>
-                {/* PLAIDLINK */}
+                <PlaidLink user={user} variant="primary" />
             </div>
         ): (
             <>
@@ -137,8 +151,8 @@ const AuthForm = ({ type }: { type: string }) => {
                             <div className='flex gap-4'>
                                 <CustomInput 
                                     control={form.control} 
-                                    name='province' 
-                                    label="Province" 
+                                    name='state' 
+                                    label="State" 
                                     placeholder="Example: WC"
                                 />
                                 <CustomInput 
@@ -157,8 +171,8 @@ const AuthForm = ({ type }: { type: string }) => {
                                 />
                                 <CustomInput 
                                     control={form.control} 
-                                    name='identityNumber' 
-                                    label="Identity Number" 
+                                    name='ssn' 
+                                    label="ssn" 
                                     placeholder="Example: 1223451234123"
                                 />
                             </div>  
